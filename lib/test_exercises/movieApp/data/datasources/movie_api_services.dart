@@ -13,14 +13,12 @@ class MovieApiServices {
           headers: {'Authorization': 'Bearer $token'},
         ),
       );
-      print("Respuesta de la API: ${response.data}");
 
       final List<dynamic> results = response.data['results'];
       return results
           .map((json) => Movie.fromJson(json as Map<String, dynamic>))
           .toList();
     } catch (e) {
-      print("Error al obtener películas: $e");
       rethrow;
     }
   }

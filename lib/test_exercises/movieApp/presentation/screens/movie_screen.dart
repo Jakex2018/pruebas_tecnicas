@@ -29,7 +29,6 @@ class _MovieScreenState extends State<MovieScreen> {
       ),
       body: BlocBuilder<MovieBloc, MovieState>(
         builder: (context, state) {
-          print(state);
           if (state is MoviesLoadingState) {
             return const Text('');
           } else if (state is MoviesLoaded) {

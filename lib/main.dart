@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
+import 'package:prueba_tecnica_01/test_exercises/authScreen/login_screen.dart';
 import 'package:prueba_tecnica_01/test_exercises/chatApp/screens/auth_chat_screen.dart';
 import 'package:prueba_tecnica_01/test_exercises/movieApp/presentation/screens/movie_screen.dart';
 import 'package:prueba_tecnica_01/test_exercises/todoList/app/app_provider.dart';
@@ -72,6 +73,15 @@ class SelectTestScreen extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const MovieScreen()),
+              );
+            },
+          ),
+          ListTile(
+            title: const Text('Prueba Técnica 04'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const LoginAnimate()),
               );
             },
           ),

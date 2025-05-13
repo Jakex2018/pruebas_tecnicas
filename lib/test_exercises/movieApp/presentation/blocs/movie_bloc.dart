@@ -15,7 +15,6 @@ class MovieBloc extends Bloc<MovieEvent, MovieState> {
 
   Future<void> _onGetMovies(
       GetMoviesEvent event, Emitter<MovieState> emit) async {
-    print("Iniciando la obtención de películas...");
     try {
       emit(MoviesLoadingState());
       final movies = await _getMovies.getMovies(event.token);
