@@ -14,6 +14,7 @@ class _LoginAnimateState extends State<LoginAnimate>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
+  late Animation<double> _sizeAnimation;
   bool _showLogin = true;
 
   @override
@@ -27,6 +28,10 @@ class _LoginAnimateState extends State<LoginAnimate>
     _animation = Tween<double>(begin: 0, end: 1).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
     );
+
+    _sizeAnimation = Tween<double>(begin: 0.85, end: 1).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
   }
 
   void _flipCard() {
@@ -35,7 +40,9 @@ class _LoginAnimateState extends State<LoginAnimate>
     } else {
       _controller.reverse();
     }
-    _showLogin = !_showLogin;
+    setState(() {
+      _showLogin = !_showLogin;
+    });
   }
 
   @override
@@ -50,9 +57,20 @@ class _LoginAnimateState extends State<LoginAnimate>
       body: Stack(
         fit: StackFit.expand,
         children: [
-          Image.network(
-            'https://images.unsplash.com/photo-1503264116251-35a269479413?auto=format&fit=crop&w=1950&q=80',
-            fit: BoxFit.cover,
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 600),
+            transitionBuilder: (Widget child, Animation<double> animation) {
+              return FadeTransition(opacity: animation, child: child);
+            },
+            child: SizedBox.expand(
+              key: ValueKey<bool>(_showLogin),
+              child: Image.network(
+                _showLogin
+                    ? 'https://images.unsplash.com/photo-1503264116251-35a269479413?auto=format&fit=crop&w=1950&q=80'
+                    : 'https://img.freepik.com/free-vector/gradient-dynamic-lines-background_52683-66904.jpg?uid=R108857166&ga=GA1.1.915845944.1744392359&semt=ais_hybrid&w=740',
+                fit: BoxFit.cover,
+              ),
+            ),
           ),
           Container(
             color: Colors.black.withOpacity(0.3),
@@ -86,7 +104,6 @@ class _LoginAnimateState extends State<LoginAnimate>
   Widget _buildLogin() {
     return _buildCard(
       child: Column(
-        mainAxisSize: MainAxisSize.min,
         children: [
           const Text(
             'Login to your account',
@@ -96,7 +113,7 @@ class _LoginAnimateState extends State<LoginAnimate>
           const FormText(label: 'Email', isPassword: false),
           const SizedBox(height: 20),
           const FormText(label: 'Password', isPassword: true),
-          const SizedBox(height: 20),
+          const SizedBox(height: 50),
           _buildButton('Login', _flipCard),
         ],
       ),
@@ -106,7 +123,6 @@ class _LoginAnimateState extends State<LoginAnimate>
   Widget _buildRegister() {
     return _buildCard(
       child: Column(
-        mainAxisSize: MainAxisSize.min,
         children: [
           const Text(
             'Create a new account',
@@ -126,24 +142,43 @@ class _LoginAnimateState extends State<LoginAnimate>
   }
 
   Widget _buildCard({required Widget child}) {
-    return Padding(
-      padding: const EdgeInsets.all(18.0),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: Container(
-            height: 400,
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.15),
+    return AnimatedBuilder(
+      animation: _sizeAnimation,
+      builder: (context, _) {
+        return Transform.scale(
+          scale: _sizeAnimation.value,
+          child: Padding(
+            padding: const EdgeInsets.all(18.0),
+            child: ClipRRect(
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: Colors.white.withOpacity(0.2)),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                child: Container(
+                  width: 350,
+                  height: 370,
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: Colors.white.withOpacity(0.2)),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.3),
+                        blurRadius: 10 * _sizeAnimation.value,
+                        offset: const Offset(0, 5),
+                      ),
+                    ],
+                  ),
+                  child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    child: child,
+                  ),
+                ),
+              ),
             ),
-            child: SingleChildScrollView(child: child),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
